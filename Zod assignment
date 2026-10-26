@@ -1,0 +1,62 @@
+const { z } = require("zod");
+
+const loginSchema = z.object({
+  name: z.string().trim().min(2, "name must be atleast 2 character"),
+  Email: z.string().trim().toLowerCase().email("Invalid Email"),
+  Password: z.string().min(6, "Password must be atleast 6 characters"),
+  Gender: z.string().trim().min(1, "Enter gender"),
+  Address: z.string().trim().min(10, "address must contain at least 10 characters")
+});
+
+const name = prompt("Enter name:");
+const Email = prompt("Enter Emails:");
+const Password = prompt("Enter password:");
+const Gender = prompt("Enter Gender:");
+const Address = prompt("Enter Address:");
+
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const result = loginSchema.safeParse({
+    name,
+    Email,
+    Password,
+    Gender,
+    Address
+  });
+
+  const msg = document.getElementById("msg");
+
+  if (!result.success) {
+    const error = result.error.issues.map((i) => ({
+      field: i.path.join("-"),
+      msg: i.msg
+    }));
+    // Note: res.status(400) is typically used in backend Node.js/Express environments, 
+    // but kept here as written in your notes:
+    return res.status(400).json({ error });
+  } else {
+    console.log("login successfull!");
+  }
+});
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login Form</title>
+</head>
+<body>
+  <form id="loginForm">
+    <input type="text" id="name" placeholder="Enter name"><br><br>
+    <input type="email" id="email" placeholder="Enter Email"><br><br>
+    <input type="password" id="password" placeholder="Enter password"><br><br>
+    <input type="text" id="gender" placeholder="Enter Gender"><br><br>
+    <input type="text" id="Address" placeholder="Enter Address"><br><br>
+    <button type="submit">Login</button>
+  </form>
+  
+  <p id="msg"></p>
+</body>
+</html>
+
